@@ -2,7 +2,7 @@
 
 These are  _abbreviated_ instructions on how to add a new sensor to the OLA firmware. It's more of an aide-memoire really... Sorry about that.
 
-Caveat: this is _currently_ how a new sensor is added, for version v1.n of the OLA firmware using v1.2.n of the Apollo3 boards (the OLA code is compiled using the SparkFun RedBoard Artemis ATP (All The Pins) board). This will change, dramatically, when we upgrade to v2 of Apollo3 and integrate BLE support.
+For the compilation instructions, please see [COMPILE_BINARY.md](https://github.com/sparkfun/OpenLog_Artemis/blob/main/COMPILE_BINARY.md).
 
 ## Use The Release Candidate Branch
 
