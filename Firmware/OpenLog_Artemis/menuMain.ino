@@ -35,7 +35,7 @@ void menuMain(bool alwaysOpen)
 
     SerialPrintln(F("2) Configure Time Stamp"));
 
-    if (online.IMU)
+    //if (online.IMU) // Disabled "if" to allow re-enable if disabled 
       SerialPrintln(F("3) Configure IMU Logging"));
 
     if (settings.useTxRxPinsForTerminal == false)
@@ -66,7 +66,7 @@ void menuMain(bool alwaysOpen)
       menuLogRate();
     else if (incoming == '2')
       menuTimeStamp();
-    else if ((incoming == '3') && (online.IMU))
+    else if ((incoming == '3')) //&& (online.IMU))
       restartIMU = menuIMU();
     else if ((incoming == '4') && (settings.useTxRxPinsForTerminal == false))
       menuSerialLogging();
