@@ -8,6 +8,12 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+# New Code for Mac
+RUN apt-get update && apt-get install -y \
+    build-essential git python3 \
+    gcc-arm-none-eabi binutils-arm-none-eabi \
+    && rm -rf /var/lib/apt/lists/*
+
 # Setup Arduino CLI
 #RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | BINDIR=/usr/local/bin sh
 RUN curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
