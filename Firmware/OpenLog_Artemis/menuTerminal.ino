@@ -170,9 +170,9 @@ void menuLogRate()
       settings.enableTerminalOutput ^= 1;
     else if (incoming == 3)
     {
-      SerialPrint(F("Enter baud rate (1200 to 500000): "));
+      SerialPrint(F("Enter baud rate (1200 to 460800): ")); // normal baud rates used
       int newBaud = getNumber(menuTimeout); //Timeout after x seconds
-      if (newBaud < 1200 || newBaud > 500000)
+      if (newBaud < 1200 || newBaud > 460800)
       {
         SerialPrintln(F("Error: baud rate out of range"));
       }
@@ -190,15 +190,15 @@ void menuLogRate()
       if (settings.useGPIO11ForTrigger == false)
       {
         int maxOutputRate = settings.serialTerminalBaudRate / 10 / (totalCharactersPrinted / measurementCount);
-        maxOutputRate = (maxOutputRate * 90) / 100; //Fudge reduction of 10%
+        maxOutputRate = (maxOutputRate * 95) / 100; //Fudge reduction of 5%, pushed harder for max rate
   
         if (maxOutputRate < 10) maxOutputRate = 10; //TODO this is forced. Needed when multi seconds between readings.
   
-        SerialPrintf2("How many readings per second would you like to log? (Current max is %d): ", maxOutputRate);
+        SerialPrintf2("How many readings per second would you like to log? (Recommended max is %d): ", maxOutputRate);
         int tempRPS = getNumber(menuTimeout); //Timeout after x seconds
-        if (tempRPS < 1 || tempRPS > maxOutputRate)
-          SerialPrintln(F("Error: Readings Per Second out of range"));
-        else
+        //if (tempRPS < 1 || tempRPS > maxOutputRate)
+         // SerialPrintln(F("Error: Readings Per Second out of range"));
+        //else
           settings.usBetweenReadings = 1000000ULL / ((uint64_t)tempRPS);
       }
     }
