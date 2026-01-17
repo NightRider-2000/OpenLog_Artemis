@@ -467,10 +467,10 @@ bool beginQwiicDevices()
         break;
       case DEVICE_LIGHT_VEML7700:
         {
-          VEML7700 *tempDevice = (VEML7700 *)temp->classPtr;
-          struct_VEML7700 *nodeSetting = (struct_VEML7700 *)temp->configPtr; //Create a local pointer that points to same spot as node does
-          if (nodeSetting->powerOnDelayMillis > qwiicPowerOnDelayMillis) qwiicPowerOnDelayMillis = nodeSetting->powerOnDelayMillis; // Increase qwiicPowerOnDelayMillis if required
-          temp->online = tempDevice->begin(qwiic); //Wire port
+          //VEML7700 *tempDevice = (VEML7700 *)temp->classPtr;
+          //struct_VEML7700 *nodeSetting = (struct_VEML7700 *)temp->configPtr; //Create a local pointer that points to same spot as node does
+          //if (nodeSetting->powerOnDelayMillis > qwiicPowerOnDelayMillis) qwiicPowerOnDelayMillis = nodeSetting->powerOnDelayMillis; // Increase qwiicPowerOnDelayMillis if required
+          //temp->online = tempDevice->begin(qwiic); //Wire port
         }
         break;
       case DEVICE_VOC_CCS811:
@@ -1080,10 +1080,15 @@ void configureDevice(node * temp)
         else if (sensorSetting->gain4) sensor->setGain(ADS1015_CONFIG_PGA_4);
         else if (sensorSetting->gain8) sensor->setGain(ADS1015_CONFIG_PGA_8);
         else sensor->setGain(ADS1015_CONFIG_PGA_16);
+        
 
-        //sensor->setSampleRate(ADS1015_CONFIG_RATE_490HZ); // Default is 1600Hz
-
-        sensor->useConversionReady(true);
+        // Set sample rate to capture small prox. target passing ~36Hz for rotational speed signals
+        // Turning OFF useConversionReady sets "continous" measurement with data held in registry
+        // If OLA queries data at slow rate, it will see average of last values recorded in the last 1/freq sec
+        // (Consider for user selected configuration via menus)
+        sensor->setSampleRate(ADS1015_CONFIG_RATE_128HZ); // Default is 1600Hz
+        sensor->useConversionReady(false);
+        sensor->setMode(0);
       }
       break;
     default:
@@ -1391,9 +1396,9 @@ deviceType_e testDevice(uint8_t i2cAddress, uint8_t muxAddress, uint8_t portNumb
           return (DEVICE_UV_VEML6075);
 
         //Confidence: Low - just checks registers can be written to
-        VEML7700 sensor1;
-        if (sensor1.begin(qwiic) == true) //Wire port
-          return (DEVICE_LIGHT_VEML7700);
+        // VEML7700 sensor1;
+        // if (sensor1.begin(qwiic) == true) //Wire port
+          // return (DEVICE_LIGHT_VEML7700);
       }
       break;
     case 0x18:
