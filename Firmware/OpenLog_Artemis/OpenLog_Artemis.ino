@@ -1180,6 +1180,13 @@ void beginIMU(bool silent)
 
     bool success = true;
 
+    // Fork Updates (Sam)
+    // Updates for IMU to run in continous mode for faster recording
+    //
+    myICM.sleep(false); // Wake up
+    myICM.lowPower(false); // no low power mode
+    myICM.setSampleMode((ICM_20948_Internal_Acc | ICM_20948_Internal_Gyr),ICM_20948_Sample_Mode_Continuous);
+  
     //Check if we are using the DMP
     if (settings.imuUseDMP == false)
     {
