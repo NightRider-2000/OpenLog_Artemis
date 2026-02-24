@@ -16,6 +16,7 @@ void getData(char* sdOutputData, size_t lenData)
   char tempData2[16];
   char tempData3[16];
   sdOutputData[0] = '\0'; //Clear string contents
+  sdOutputData_Hz[0] = '\0'; //Clear string contents
 
   if (settings.logRTC)
   {
@@ -204,6 +205,7 @@ void getData(char* sdOutputData, size_t lenData)
     olaftoa(actualRate, tempData1, 3, sizeof(tempData) / sizeof(char));
     sprintf(tempData, "%s,", tempData1);
     strlcat(sdOutputData, tempData, lenData);
+    strlcat(sdOutputData_Hz, tempData, lenData);
   }
 
   if (settings.printMeasurementCount)
@@ -212,7 +214,9 @@ void getData(char* sdOutputData, size_t lenData)
     strlcat(sdOutputData, tempData, lenData);
   }
 
+  // add carriage return
   strlcat(sdOutputData, "\r\n", lenData);
+  strlcat(sdOutputData_Hz, "\r\n", lenData);
 
   totalCharactersPrinted += strlen(sdOutputData);
 }

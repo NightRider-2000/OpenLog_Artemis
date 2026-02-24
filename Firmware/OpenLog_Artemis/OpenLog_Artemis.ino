@@ -355,13 +355,14 @@ uint64_t lastSDFileNameChangeTime; //Used to calculate the interval since the la
 unsigned long measurementCount = 0; //Used to calc the actual update rate.
 unsigned long measurementTotal = 0; //The total number of recorded measurements. (Doesn't get reset when the menu is opened)
 char sdOutputData[512 * 2]; //Factor of 512 for easier recording to SD in 512 chunks
+char sdOutputData_Hz[512 * 2]; //Factor of 512 for easier recording to SD in 512 chunks
 unsigned long lastReadTime = 0; //Used to delay until user wants to record a new reading
 unsigned long lastDataLogSyncTime = 0; //Used to record to SD every half second
 unsigned int totalCharactersPrinted = 0; //Limit output rate based on baud rate and number of characters to print
 bool takeReading = true; //Goes true when enough time has passed between readings or we've woken from sleep
 bool sleepAfterRead = false; //Used to keep the code awake for at least minimumAwakeTimeMillis
 const uint64_t maxUsBeforeSleep = 2000000ULL; //Number of us between readings before sleep is activated.
-const byte menuTimeout = 60; //Menus will exit/timeout after this number of seconds
+const byte menuTimeout = 254; //Menus will exit/timeout after this number of seconds
 const int sdCardMenuTimeout = 60; // sdCard menu will exit/timeout after this number of seconds
 volatile static bool stopLoggingSeen = false; //Flag to indicate if we should stop logging
 uint64_t qwiicPowerOnTime = 0; //Used to delay after Qwiic power on to allow sensors to power on, then answer autodetect
@@ -770,7 +771,13 @@ void loop() {
 
     //Print to terminal
     if (settings.enableTerminalOutput == true)
-      SerialPrint(sdOutputData); //Print to terminal
+      {
+        SerialPrint(sdOutputData); //Print to terminal
+      }
+      else
+      {
+        SerialPrint(sdOutputData_Hz); //Print to terminal just record frequency
+      }
 
     //Output to TX pin
     if ((settings.outputSerial == true) && (online.serialOutput == true))

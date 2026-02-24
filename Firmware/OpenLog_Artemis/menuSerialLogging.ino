@@ -119,9 +119,9 @@ void menuSerialLogging()
     }
     else if (incoming == '3')
     {
-      SerialPrint(F("Enter zmodem start delay (5 to 60): "));
+      SerialPrint(F("Enter zmodem start delay (2 to 60): "));
       int newDelay = getNumber(menuTimeout); //Timeout after x seconds
-      if (newDelay < 5 || newDelay > 60)
+      if (newDelay < 2 || newDelay > 60)
       {
         SerialPrintln(F("Error: start delay out of range"));
       }
