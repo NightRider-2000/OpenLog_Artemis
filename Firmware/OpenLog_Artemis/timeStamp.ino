@@ -48,7 +48,7 @@ void getTimeString(char timeStringBuffer[])
     char rtcHour[3];
     char rtcMin[3];
     char rtcSec[3];
-    char rtcHundredths[3];
+    char rtcMilliseconds[4];
     char timeZoneH[4];
     char timeZoneM[4];
     if (adjustedHour < 10)
@@ -63,10 +63,15 @@ void getTimeString(char timeStringBuffer[])
       sprintf(rtcSec, "0%d", myRTC.seconds);
     else
       sprintf(rtcSec, "%d", myRTC.seconds);
-    if (myRTC.hundredths < 10)
-      sprintf(rtcHundredths, "0%d", myRTC.hundredths);
+    uint32_t elapsed = secondTickValid ? (micros() - microsAtLastSecond) : ((uint32_t)myRTC.hundredths * 10000UL);
+    if (elapsed >= 1000000UL) elapsed = 999000UL; // safety cap
+    uint16_t ms = elapsed / 1000;
+    if (ms < 10)
+      sprintf(rtcMilliseconds, "00%d", ms);
+    else if (ms < 100)
+      sprintf(rtcMilliseconds, "0%d", ms);
     else
-      sprintf(rtcHundredths, "%d", myRTC.hundredths);
+      sprintf(rtcMilliseconds, "%d", ms);
     if (settings.localUTCOffset >= 0)
     {
       if (settings.localUTCOffset < 10)
@@ -95,7 +100,7 @@ void getTimeString(char timeStringBuffer[])
     }
     if (settings.logTime)
     {
-      sprintf(rtcTime, "%s:%s:%s.%s,", rtcHour, rtcMin, rtcSec, rtcHundredths);
+      sprintf(rtcTime, "%s:%s:%s.%s,", rtcHour, rtcMin, rtcSec, rtcMilliseconds);
       strcat(timeStringBuffer, rtcTime);
     }
   }

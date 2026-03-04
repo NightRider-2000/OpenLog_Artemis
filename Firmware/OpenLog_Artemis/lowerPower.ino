@@ -85,6 +85,8 @@ void powerDownOLA(void)
     pinMode(PIN_TRIGGER, INPUT); // Remove the pull-up
   }
 
+  myRTC.detachInterrupt(); // Disable RTC second tick interrupt during power down
+
   //WE NEED TO POWER DOWN ASAP - we don't have time to close the SD files
   //Save files before going to sleep
   //  if (online.dataLogging == true)
@@ -283,6 +285,9 @@ void goToSleep(uint32_t sysTicksToSleep)
     detachInterrupt(PIN_TRIGGER); // Disable the interrupt
     pinMode(PIN_TRIGGER, INPUT); // Remove the pull-up
   }
+
+  myRTC.detachInterrupt(); // Disable RTC second tick during sleep - micros() resets on wake
+  secondTickValid = false;
 
   //Save files before going to sleep
   if (online.dataLogging == true)
@@ -522,6 +527,9 @@ void wakeFromSleep()
     pinMode(PIN_TRIGGER, INPUT_PULLUP);
     pin_config(PinName(PIN_TRIGGER), g_AM_HAL_GPIO_INPUT_PULLUP); // Make sure the pin does actually get re-configured
   }
+
+  myRTC.attachInterrupt(); // Re-enable RTC second tick interrupt after wakeup
+  secondTickValid = false; // Will become true on first second tick after wakeup
 
   pinMode(PIN_STAT_LED, OUTPUT);
   pin_config(PinName(PIN_STAT_LED), g_AM_HAL_GPIO_OUTPUT); // Make sure the pin does actually get re-configured

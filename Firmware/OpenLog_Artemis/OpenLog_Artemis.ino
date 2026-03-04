@@ -372,6 +372,8 @@ const int lowBatteryReadingsLimit = 10; // Don't declare the battery voltage low
 volatile static bool triggerEdgeSeen = false; //Flag to indicate if a trigger interrupt has been seen
 char serialTimestamp[50]; //Buffer to store serial timestamp, if needed
 volatile static bool powerLossSeen = false; //Flag to indicate if a power loss event has been seen
+volatile uint32_t microsAtLastSecond = 0; //Captured by RTC second interrupt for ms timestamp resolution
+volatile bool secondTickValid = false; //Goes true once the first RTC second tick has fired after power-on or wakeup
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 // gfvalvo's flash string helper code: https://forum.arduino.cc/index.php?topic=533118.msg3634809#msg3634809
@@ -410,6 +412,15 @@ extern "C" void am_watchdog_isr(void)
   // Restart the watchdog if petTheDog is true
   if (petTheDog)
     wdt.restart(); // "Pet" the dog.
+}
+
+// Interrupt handler for the RTC alarm - fires every second at hundredths = 0
+// Captures micros() at the second boundary for millisecond timestamp resolution
+extern "C" void am_rtc_isr(void)
+{
+  myRTC.clearInterrupt();
+  microsAtLastSecond = micros();
+  secondTickValid = true;
 }
 
 void startWatchdog()
@@ -548,6 +559,10 @@ void setup() {
   }
 
   beginIMU(); //61ms
+
+  myRTC.setAlarm(0, 0, 0, 0, 1, 1); //Set alarm to fire at hundredths = 0 (second boundary)
+  myRTC.setAlarmMode(7); //AM_HAL_RTC_ALM_RPT_SEC - repeat every second
+  myRTC.attachInterrupt();
 
   if (online.microSD == true) SerialPrintln(F("SD card online"));
   else SerialPrintln(F("SD card offline"));
