@@ -33,7 +33,7 @@ void getData(char* sdOutputData, size_t lenData)
     if (settings.logAnalogVoltages == true)
     {
       float voltage = analog11 * 2 / 16384.0;
-      olaftoa(voltage, tempData1, 2, sizeof(tempData1) / sizeof(char));
+      olaftoa(voltage, tempData1, 3, sizeof(tempData1) / sizeof(char));
       sprintf(tempData, "%s,", tempData1);
     }
     else
@@ -49,7 +49,7 @@ void getData(char* sdOutputData, size_t lenData)
     if (settings.logAnalogVoltages == true)
     {
       float voltage = analog12 * 2 / 16384.0;
-      olaftoa(voltage, tempData1, 2, sizeof(tempData1) / sizeof(char));
+      olaftoa(voltage, tempData1, 3, sizeof(tempData1) / sizeof(char));
       sprintf(tempData, "%s,", tempData1);
     }
     else
