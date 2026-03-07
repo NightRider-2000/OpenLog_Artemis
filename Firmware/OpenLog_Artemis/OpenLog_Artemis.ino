@@ -1250,12 +1250,12 @@ void beginIMU(bool silent)
         SerialPrintln(F("Error: Could not configure the IMU Full Scale!"));
         success = false;
       }
-      // Set sample rate divider to ~160Hz (above 138Hz logging rate for margin)
-      // Accel ODR = 1125 / (1 + 6) = 160.7 Hz
-      // Gyro  ODR = 1100 / (1 + 6) = 157.1 Hz
+      // Set sample rate divider to ~112Hz (below 138Hz logging rate - may drop IMU samples)
+      // Accel ODR = 1125 / (1 + 9) = 112.5 Hz
+      // Gyro  ODR = 1100 / (1 + 9) = 110.0 Hz
       ICM_20948_smplrt_t mySmplrt;
-      mySmplrt.a = 6;
-      mySmplrt.g = 6;
+      mySmplrt.a = 9;
+      mySmplrt.g = 9;
       retval = myICM.setSampleRate((ICM_20948_Internal_Acc | ICM_20948_Internal_Gyr), mySmplrt);
       if (retval != ICM_20948_Stat_Ok)
       {
