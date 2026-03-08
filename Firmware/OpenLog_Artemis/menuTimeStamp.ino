@@ -33,7 +33,7 @@ void menuTimeStamp()
     SerialPrint(rtcDate);
     SerialPrint(F(" "));
 
-    char rtcTime[14]; //09:14:37.410,
+    char rtcTime[15]; //09:14:37.4100
     int adjustedHour = myRTC.hour;
     if (settings.hour24Style == false)
     {
@@ -42,7 +42,7 @@ void menuTimeStamp()
     char rtcHour[3];
     char rtcMin[3];
     char rtcSec[3];
-    char rtcMilliseconds[4];
+    char rtcMilliseconds[5];
     if (adjustedHour < 10)
       sprintf(rtcHour, "0%d", adjustedHour);
     else
@@ -55,12 +55,14 @@ void menuTimeStamp()
       sprintf(rtcSec, "0%d", myRTC.seconds);
     else
       sprintf(rtcSec, "%d", myRTC.seconds);
-    uint32_t elapsed = secondTickValid ? (micros() - microsAtLastSecond) : ((uint32_t)myRTC.hundredths * 10000UL);
-    if (elapsed >= 1000000UL) elapsed = 999000UL; // safety cap
-    uint16_t ms = elapsed / 1000;
+    uint32_t elapsed = secondTickValid ? (uint32_t)((micros() - microsAtLastSecond) * hfrcCorrection) : ((uint32_t)myRTC.hundredths * 10000UL);
+    if (elapsed >= 1000000UL) elapsed = 999900UL; // safety cap
+    uint16_t ms = elapsed / 100;
     if (ms < 10)
-      sprintf(rtcMilliseconds, "00%d", ms);
+      sprintf(rtcMilliseconds, "000%d", ms);
     else if (ms < 100)
+      sprintf(rtcMilliseconds, "00%d", ms);
+    else if (ms < 1000)
       sprintf(rtcMilliseconds, "0%d", ms);
     else
       sprintf(rtcMilliseconds, "%d", ms);

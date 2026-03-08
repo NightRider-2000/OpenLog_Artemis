@@ -374,6 +374,7 @@ char serialTimestamp[50]; //Buffer to store serial timestamp, if needed
 volatile static bool powerLossSeen = false; //Flag to indicate if a power loss event has been seen
 volatile uint32_t microsAtLastSecond = 0; //Captured by RTC second interrupt for ms timestamp resolution
 volatile bool secondTickValid = false; //Goes true once the first RTC second tick has fired after power-on or wakeup
+volatile float hfrcCorrection = 1.0f; //Scale factor calibrating micros() (HFRC) against the RTC crystal; updated each second
 //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 // gfvalvo's flash string helper code: https://forum.arduino.cc/index.php?topic=533118.msg3634809#msg3634809
@@ -415,11 +416,18 @@ extern "C" void am_watchdog_isr(void)
 }
 
 // Interrupt handler for the RTC alarm - fires every second at hundredths = 0
-// Captures micros() at the second boundary for millisecond timestamp resolution
+// Captures micros() at the second boundary and calibrates HFRC against the RTC crystal
 extern "C" void am_rtc_isr(void)
 {
   myRTC.clearInterrupt();
-  microsAtLastSecond = micros();
+  uint32_t now = micros();
+  if (secondTickValid)
+  {
+    uint32_t measured = now - microsAtLastSecond;
+    if (measured > 900000UL && measured < 1100000UL) // sanity check: reject wildly wrong values
+      hfrcCorrection = 1000000.0f / (float)measured;
+  }
+  microsAtLastSecond = now;
   secondTickValid = true;
 }
 
